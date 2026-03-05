@@ -42,6 +42,5 @@ def resumidor_pirata():
 
     print(respuesta.content)
 
-
 if __name__ == "__main__":
     resumidor_pirata()
