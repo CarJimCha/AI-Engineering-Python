@@ -2,8 +2,8 @@ import os
 from dotenv import load_dotenv
 from langchain_classic.chains.combine_documents import create_stuff_documents_chain
 from langchain_classic.chains.retrieval import create_retrieval_chain
+from langchain_google_genai import ChatGoogleGenerativeAI
 
-from langchain_groq import ChatGroq
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_community.document_loaders import PyPDFLoader
 from langchain_community.vectorstores import FAISS
@@ -11,12 +11,24 @@ from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_core.prompts import ChatPromptTemplate
 
 load_dotenv()
-groq_key = os.getenv("GROQ_API_KEY")
+# Asegúrate de que en tu .env la variable se llame GOOGLE_API_KEY
+api_key = os.getenv("GOOGLE_API_KEY")
+
 
 
 def run_rag_debug():
     # 1. Configuración
-    llm = ChatGroq(temperature=0, model_name="llama-3.3-70b-versatile", groq_api_key=groq_key)
+
+    # 2. Inicializar el LLM
+    llm = ChatGoogleGenerativeAI(
+        model="gemini-2.5-flash",  # O "gemini-2.5-pro" si quieres más potencia
+        temperature=0,
+        max_tokens=None,
+        timeout=None,
+        max_retries=2,
+    )
+
+
     embeddings = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
 
     # 2. Carga (Cambiamos al archivo que tienes: fasciculo-2.pdf)
@@ -32,14 +44,15 @@ def run_rag_debug():
     chunks = text_splitter.split_documents(docs)
     vector_store = FAISS.from_documents(chunks, embeddings)
 
-    # 3. Diseño del Prompt
+    # 3. Diseño del Prompt (Versión para Gemini)
     prompt = ChatPromptTemplate.from_template("""
-    Responde basándote solo en el contexto proporcionado.
-    Si no encuentras la respuesta en el contexto, di que no lo sabes.
+        Utiliza el siguiente contexto para responder a la pregunta del usuario. 
+        Si la respuesta no está literal, intenta deducirla basándote en la información disponible.
+        Si el contexto no tiene absolutamente nada que ver, indica qué temas se tratan en el texto.
 
-    Contexto: {context}
-    Pregunta: {input}
-    """)
+        Contexto: {context}
+        Pregunta: {input}
+        """)
 
     # 4. Creación de la Cadena
     combine_docs_chain = create_stuff_documents_chain(llm, prompt)
@@ -47,7 +60,7 @@ def run_rag_debug():
 
     # 5. Ejecución con Auditoría
     #pregunta = "¿Cual es la duración del módulo Proyecto de desarrollo de aplicaciones Web?"
-    pregunta = "¿Un sistema de recomendación de películas como el de Netflix analiza las películas que has visto en el pasado para sugerirte nuevas. ¿Qué concepto describe mejor cómo \"aprende\" el sistema?"
+    pregunta = " Un hospital implementa una IA para ayudar a los radiólogos. El KPI Reducción de la tasa de error diagnóstico en un 5%, es un ejemplo de:"
 
     print(f"\n--- Preguntando: {pregunta} ---")
 
