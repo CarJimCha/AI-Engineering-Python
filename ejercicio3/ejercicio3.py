@@ -28,7 +28,6 @@ def run_rag_debug():
         max_retries=2,
     )
 
-
     embeddings = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
 
     # 2. Carga (Cambiamos al archivo que tienes: fasciculo-2.pdf)

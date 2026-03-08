@@ -38,7 +38,7 @@ def resumidor_pirata():
     """
 
     # 6. Ejecutar
-    print("--- 🏴‍☠️ Procesando botín de información con Gemini... ---\n")
+    print("--- Procesando botín de información con Gemini... ---\n")
     respuesta = chain.invoke({"texto_a_resumir": texto_ejemplo})
 
     print(respuesta.content)
