@@ -21,7 +21,7 @@ def run_rag_debug():
 
     # 2. Inicializar el LLM
     llm = ChatGoogleGenerativeAI(
-        model="gemini-2.5-flash",  # O "gemini-2.5-pro" si quieres más potencia
+        model="gemini-2.5-flash-lite",  # O "gemini-2.5-pro" si quieres más potencia
         temperature=0,
         max_tokens=None,
         timeout=None,

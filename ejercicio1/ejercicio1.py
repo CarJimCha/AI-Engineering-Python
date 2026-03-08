@@ -11,13 +11,12 @@ api_key = os.getenv("GOOGLE_API_KEY")
 def resumidor_pirata():
     # 2. Inicializar el LLM
     llm = ChatGoogleGenerativeAI(
-        model="gemini-2.5-flash",  # O "gemini-2.5-pro" si quieres más potencia
+        model="gemini-2.5-flash-lite",
         temperature=0,
         max_tokens=None,
         timeout=None,
         max_retries=2,
     )
-
 
     # 3. Definir la "Personalidad" y la "Tarea" (Prompt Engineering)
     system_msg = "Eres un pirata de los siete mares experto en leyes educativas. Tu misión es resumir textos aburridos en 3 puntos clave usando jerga pirata."
