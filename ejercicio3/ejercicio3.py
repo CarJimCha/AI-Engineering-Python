@@ -14,8 +14,6 @@ load_dotenv()
 # Asegúrate de que en tu .env la variable se llame GOOGLE_API_KEY
 api_key = os.getenv("GOOGLE_API_KEY")
 
-
-
 def run_rag_debug():
     # 1. Configuración
 
@@ -65,7 +63,7 @@ def run_rag_debug():
 
     response = rag_chain.invoke({"input": pregunta})
 
-    # --- PARTE CLAVE PARA LA CLASE: IMPRIMIR EL CONTEXTO ---
+    # --- IMPRIMIR EL CONTEXTO ---
     print("\n" + "=" * 50)
     print("CONTEXTO RECUPERADO (Lo que el buscador encontró)")
     print("=" * 50)
