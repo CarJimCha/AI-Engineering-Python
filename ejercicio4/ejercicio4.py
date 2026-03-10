@@ -17,14 +17,13 @@ from langchain_text_splitters import RecursiveCharacterTextSplitter
 
 load_dotenv()
 
-
 def configurar_asistente():
     if not os.path.exists("normativa"):
         os.makedirs("normativa")
-        print("⚠️ Crea la carpeta 'normativa' y pon tus PDFs dentro.")
+        print("Crea la carpeta 'normativa' y pon tus PDFs dentro.")
         return None
 
-    sys.stdout.write("--- 📂 Indexando normativa... ")
+    sys.stdout.write("--- Indexando normativa... ")
     sys.stdout.flush()
 
     loader = PyPDFDirectoryLoader("normativa/")
@@ -35,7 +34,7 @@ def configurar_asistente():
 
     embeddings = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
     vector_db = FAISS.from_documents(chunks, embeddings)
-    sys.stdout.write("¡Listo! ✅\n")
+    sys.stdout.write("¡Listo! \n")
 
     retriever = vector_db.as_retriever(search_kwargs={"k": 5})
 
@@ -49,7 +48,7 @@ def configurar_asistente():
     llm = ChatGoogleGenerativeAI(
         model="gemini-2.5-flash-lite",  # Usamos la versión estable
         temperature=0,
-        max_output_tokens=900,  # <-- Aumenta este valor (800-1000 es ideal para RAG)
+        max_output_tokens=800,  # <-- Aumenta este valor (800-1000 es ideal para RAG)
         max_retries=2,
     )
 
@@ -84,7 +83,6 @@ def configurar_asistente():
         history_messages_key="chat_history",
     )
 
-
 def limpiar_respuesta(salida_raw):
     """Extrae únicamente el texto de la respuesta de Gemini."""
     if isinstance(salida_raw, list):
@@ -97,20 +95,19 @@ def limpiar_respuesta(salida_raw):
         return texto
     return str(salida_raw)
 
-
 def chat_asistente():
     asistente = configurar_asistente()
     if not asistente: return
 
     print("\n" + "=" * 40)
-    print("🎓 SISTEMA DE CONSULTA EDUCATIVA v2.5")
+    print("SISTEMA DE CONSULTA EDUCATIVA v2.5")
     print("   Escribe 'salir' para finalizar")
     print("=" * 40 + "\n")
 
     config = {"configurable": {"session_id": "sesion_docente"}}
 
     while True:
-        usuario = input("👤 Tú: ")
+        usuario = input("Tú: ")
         if usuario.lower() in ["salir", "exit"]: break
 
         try:
@@ -120,11 +117,10 @@ def chat_asistente():
             # PASO CRÍTICO: Limpiamos la respuesta antes de mostrarla
             respuesta_final = limpiar_respuesta(response["output"])
 
-            print(f"🤖 Asistente: {respuesta_final}\n")
+            print(f"Asistente: {respuesta_final}\n")
 
         except Exception as e:
-            print(f"❌ Error en la comunicación: {e}")
-
+            print(f"Error en la comunicación: {e}")
 
 if __name__ == "__main__":
     chat_asistente()
