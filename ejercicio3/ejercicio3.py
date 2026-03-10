@@ -28,8 +28,7 @@ def run_rag_debug():
 
     embeddings = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
 
-    # 2. Carga (Cambiamos al archivo que tienes: fasciculo-2.pdf)
-    archivo = "fasciculo-2.pdf"
+    # 2. Carga
     archivo = "Rivas-Guia_basica_uso_inteligencia_artificial_generativa_2025.pdf"
     if not os.path.exists(archivo):
         print(f"Error: No se encuentra {archivo}")
