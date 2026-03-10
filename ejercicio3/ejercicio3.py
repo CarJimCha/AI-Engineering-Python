@@ -56,7 +56,6 @@ def run_rag_debug():
     rag_chain = create_retrieval_chain(vector_store.as_retriever(), combine_docs_chain)
 
     # 5. Ejecución con Auditoría
-    #pregunta = "¿Cual es la duración del módulo Proyecto de desarrollo de aplicaciones Web?"
     pregunta = " Un hospital implementa una IA para ayudar a los radiólogos. El KPI Reducción de la tasa de error diagnóstico en un 5%, es un ejemplo de:"
 
     print(f"\n--- Preguntando: {pregunta} ---")
