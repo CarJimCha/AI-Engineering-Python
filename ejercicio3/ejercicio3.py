@@ -52,6 +52,8 @@ def run_rag_debug():
 
     # 4. Creación de la Cadena
     combine_docs_chain = create_stuff_documents_chain(llm, prompt)
+    # El retriever actúa como el 'filtro' que decide qué 5 trozos (k=5 por defecto)
+    # de los miles que hay en el PDF son los que Gemini debe leer.
     rag_chain = create_retrieval_chain(vector_store.as_retriever(), combine_docs_chain)
 
     # 5. Ejecución con Auditoría
