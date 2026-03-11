@@ -6,6 +6,9 @@ def biblioteca_inteligente_con_metricas():
     embeddings = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
 
     # 1. Creamos una base de datos rápida con palabras para comparar
+    # La diferencia entre "planeta" y "Planeta"
+    # demuestra que el modelo es sensible a la capitalización,
+    # aunque mantenga la cercanía semántica.
     palabras_test = ["gol", "planeta", "grada", "libro", "Planeta"]
     vector_db = FAISS.from_texts(palabras_test, embeddings)
 

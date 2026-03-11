@@ -29,14 +29,14 @@ def configurar_asistente():
     loader = PyPDFDirectoryLoader("normativa/")
     docs = loader.load()
 
-    splitter = RecursiveCharacterTextSplitter(chunk_size=600, chunk_overlap=100)
+    splitter = RecursiveCharacterTextSplitter(chunk_size=800, chunk_overlap=200)
     chunks = splitter.split_documents(docs)
 
     embeddings = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
     vector_db = FAISS.from_documents(chunks, embeddings)
     sys.stdout.write("¡Listo! \n")
 
-    retriever = vector_db.as_retriever(search_kwargs={"k": 5})
+    retriever = vector_db.as_retriever(search_kwargs={"k": 8})
 
     tool = create_retriever_tool(
         retriever=retriever,
@@ -48,13 +48,15 @@ def configurar_asistente():
     llm = ChatGoogleGenerativeAI(
         model="gemini-2.5-flash-lite",  # Usamos la versión estable
         temperature=0,
-        max_output_tokens=800,  # <-- Aumenta este valor (800-1000 es ideal para RAG)
+        max_output_tokens=600,  # <-- (500-1000 es ideal para RAG)
         max_retries=2,
     )
 
     system_msg = (
-        "Eres el Asistente Oficial del Ciclo. Responde de forma concisa y profesional. "
-        "Si proporcionas datos numéricos, asegúrate de que provienen del buscador."
+        "Eres un asistente versátil y amable. Tu especialidad es ayudar con el Ciclo Formativo "
+        "usando la herramienta 'buscador_normativa' para consultas específicas sobre módulos y horas. "
+        "Sin embargo, si el usuario te pregunta sobre otros temas generales (como cocina, cultura o ayuda general), "
+        "responde usando tu propio conocimiento de forma cordial."
     )
 
     prompt = ChatPromptTemplate.from_messages([
