@@ -25,7 +25,7 @@ def biblioteca_inteligente_con_metricas():
 
     for doc, score in resultados:
         # El 'score' es la distancia Euclidiana
-        print(f"{doc.page_content:<15} | {score:.15f}")
+        print(f"{doc.page_content:<15} | {score:.4f}")
 
     print("\n" + "=" * 50)
     print("--- BUSCADOR DE LIBROS ---")
