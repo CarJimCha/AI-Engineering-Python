@@ -17,7 +17,7 @@ def biblioteca_inteligente_con_metricas():
 
     # Buscamos las distancias de "futbol" contra nuestra base
     # k=4 para ver todas las palabras del test
-    resultados = vector_db.similarity_search_with_score(query_palabra, k=4)
+    resultados = vector_db.similarity_search_with_score(query_palabra, k=5)
 
     print(f"Palabra de origen: '{query_palabra}'\n")
     print(f"{'Palabra destino':<15} | {'Distancia (Menor es mejor)':<25}")
@@ -25,7 +25,7 @@ def biblioteca_inteligente_con_metricas():
 
     for doc, score in resultados:
         # El 'score' es la distancia Euclidiana
-        print(f"{doc.page_content:<15} | {score:.4f}")
+        print(f"{doc.page_content:<15} | {score:.15f}")
 
     print("\n" + "=" * 50)
     print("--- BUSCADOR DE LIBROS ---")
