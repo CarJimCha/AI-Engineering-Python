@@ -14,8 +14,22 @@ from langchain_community.vectorstores import FAISS
 from langchain_community.chat_message_histories import ChatMessageHistory
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_text_splitters import RecursiveCharacterTextSplitter
+from langchain_core.tools import tool
 
 load_dotenv()
+
+@tool
+def consultar_calendario_examenes():
+    """
+    Consulta las fechas de los exámenes del ciclo formativo.
+    Úsala cuando el usuario pregunte por fechas o exámenes.
+    """
+    return {
+        "Proyecto Web": "15 de junio",
+        "Recuperaciones": "20 de junio",
+        "Fin de exámenes del tercer trimestre": "25 de mayo",
+        "Comienzo de exámenes del tercer trimestre": "15 de mayo"
+    }
 
 def configurar_asistente():
     if not os.path.exists("normativa"):
@@ -38,25 +52,27 @@ def configurar_asistente():
 
     retriever = vector_db.as_retriever(search_kwargs={"k": 8})
 
-    tool = create_retriever_tool(
+    tool_normativa = create_retriever_tool(
         retriever=retriever,
         name="buscador_normativa",
         description="Consulta para buscar información oficial sobre el ciclo, módulos y horas."
     )
-    tools = [tool]
+    tools = [tool_normativa, consultar_calendario_examenes]
 
     llm = ChatGoogleGenerativeAI(
-        model="gemini-2.5-flash-lite",  # Usamos la versión estable
+        model="gemini-2.5-flash-lite",
         temperature=0,
-        max_output_tokens=600,  # <-- (500-1000 es ideal para RAG)
+        max_output_tokens=600,
         max_retries=2,
     )
 
     system_msg = (
-        "Eres un asistente versátil y amable. Tu especialidad es ayudar con el Ciclo Formativo "
-        "usando la herramienta 'buscador_normativa' para consultas específicas sobre módulos y horas. "
-        "Sin embargo, si el usuario te pregunta sobre otros temas generales (como cocina, cultura o ayuda general), "
-        "responde usando tu propio conocimiento de forma cordial."
+        "Eres un asistente educativo especializado en el ciclo formativo. "
+        "Tienes acceso a dos herramientas:\n"
+        "- 'buscador_normativa': para consultar módulos, contenidos y normativa.\n"
+        "- 'consultar_calendario_examenes': para consultar fechas de exámenes.\n\n"
+        "Usa cada herramienta según corresponda. "
+        "Si no necesitas herramientas, responde directamente de forma clara y amable."
     )
 
     prompt = ChatPromptTemplate.from_messages([
@@ -75,7 +91,6 @@ def configurar_asistente():
         handle_parsing_errors=True
     )
 
-    # Memoria persistente durante la ejecución
     history = ChatMessageHistory()
 
     return RunnableWithMessageHistory(
@@ -102,7 +117,7 @@ def chat_asistente():
     if not asistente: return
 
     print("\n" + "=" * 40)
-    print("SISTEMA DE CONSULTA EDUCATIVA v2.5")
+    print("SISTEMA DE CONSULTA EDUCATIVA v3.0")
     print("   Escribe 'salir' para finalizar")
     print("=" * 40 + "\n")
 
@@ -113,12 +128,8 @@ def chat_asistente():
         if usuario.lower() in ["salir", "exit"]: break
 
         try:
-            # Invocamos al agente
             response = asistente.invoke({"input": usuario}, config=config)
-
-            # PASO CRÍTICO: Limpiamos la respuesta antes de mostrarla
             respuesta_final = limpiar_respuesta(response["output"])
-
             print(f"Asistente: {respuesta_final}\n")
 
         except Exception as e:
